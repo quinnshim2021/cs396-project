@@ -29,6 +29,32 @@ router.route("/anime")
             });
     })
 
+router.route("/cover/:id")
+    .get(async (req, res) => {
+        console.log("GET /anime/cover");
+        try 
+        {
+            const cover = req.params.id;
+            const puppeteer = require('puppeteer')
+
+            const URL = `https://www.google.com/search?q=${cover}cover&safe=active&rlz=1C5CHFA_enUS901US901&source=lnms&tbm=isch&sa=X&ved=2ahUKEwiZnprnzfXwAhXUB80KHSAaBHEQ_AUoAXoECAEQAw&biw=1792&bih=1041`
+            const browser = await puppeteer.launch()
+            const page = await browser.newPage()
+
+            await page.goto(URL)
+            await page.click(".Q4LuWd")
+            let IMAGE_SELECTOR = '.n3VNCb'
+            let imageHref = await page.evaluate((sel) => {
+                return document.querySelector(sel).getAttribute('src');
+            }, IMAGE_SELECTOR);
+            await browser.close()
+            res.status(200).send(JSON.stringify(imageHref))
+        }catch{
+            res.status(500).send("Something went wrong")
+        }
+        
+    })
+
 /*
     *genre: list that i need to regex all
     Status := 'Finished Airing' || 'Currently Airing'
