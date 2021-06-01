@@ -38,7 +38,12 @@ router.route("/cover/:id")
             const puppeteer = require('puppeteer')
 
             const URL = `https://www.google.com/search?q=${cover}cover&safe=active&rlz=1C5CHFA_enUS901US901&source=lnms&tbm=isch&sa=X&ved=2ahUKEwiZnprnzfXwAhXUB80KHSAaBHEQ_AUoAXoECAEQAw&biw=1792&bih=1041`
-            const browser = await puppeteer.launch()
+            const browser = await puppeteer.launch({
+                args: [
+                  '--no-sandbox',
+                  '--disable-setuid-sandbox',
+                ],
+              })
             const page = await browser.newPage()
 
             await page.goto(URL)
@@ -49,9 +54,13 @@ router.route("/cover/:id")
             }, IMAGE_SELECTOR);
             await browser.close()
             res.status(200).send(JSON.stringify(imageHref))
+            return;
         }catch{
             res.status(500).send("Something went wrong")
+            return;
         }
+        res.status(500).send("Something went wrong")
+        return;
         
     })
 
