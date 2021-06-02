@@ -91,7 +91,6 @@ router.route("/anime/query")
             res.status(501).send("Genres not correct shape.");
             return;
         }
-        console.log("HERE", queries)
 
         // CONSTRUCT QUERY
         let props = {};
@@ -114,7 +113,7 @@ router.route("/anime/query")
             queries.Genres.forEach((genre) => {
                 r += genre + "|"
             })
-            r.slice(0, -1);
+            r = r.slice(0, -1);
 
             props.Genres = new RegExp(r, "i")
         }
