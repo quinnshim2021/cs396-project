@@ -156,7 +156,70 @@ router.route("/anime/:id")
                 res.status(404).send("Anime not found");
                 return;
             });
-    })
+        })
+        .patch((req, res) => {
+            console.log(`PATCH /anime/${req.params.id}`);
+
+            Anime.findById(req.params.id)
+                .then(async (data) => {
+                    if (!data){
+                        res.status(505).send("");
+                        return;
+                    }
+                    let title = data.Title;
+                    title = title.replace("/", " ")
+                    let cover = "";
+                    let t = title.split(" ")
+                    t.forEach(word => {
+
+                        cover += word + "+"
+                    })
+
+                    const puppeteer = require('puppeteer')
+
+                    const URL = `https://www.google.com/search?q=${cover}cover&safe=active&rlz=1C5CHFA_enUS901US901&source=lnms&tbm=isch&sa=X&ved=2ahUKEwiZnprnzfXwAhXUB80KHSAaBHEQ_AUoAXoECAEQAw&biw=1792&bih=1041`
+                    const browser = await puppeteer.launch({
+                        args: [
+                        '--no-sandbox',
+                        '--disable-setuid-sandbox',
+                        ],
+                    })
+                    const page = await browser.newPage()
+                    await page.goto(URL)
+                    await page.click(".Q4LuWd")
+                    let IMAGE_SELECTOR = '.n3VNCb'
+                    let imageHref = await page.evaluate((sel) => {
+                        return document.querySelector(sel).getAttribute('src');
+                    }, IMAGE_SELECTOR);
+                    await browser.close()
+
+                    Anime.findByIdAndUpdate(req.params.id, {"Url": imageHref}, {new: true}, (error, data) => {
+                        if (error){
+                            res.status(404).send("Anime not found");
+                            return;
+                        }
+                        if (!data){
+                            res.status(404).send("Anime not found");
+                            return;
+                        }
+                        res.status(200).send(data);
+                        return;
+                    });
+                });
+            
+            // Anime.findByIdAndUpdate(req.params.id, req.body, {new: true}, (error, data) => {
+            //     if (error){
+            //         res.status(404).send("Anime not found");
+            //         return;
+            //     }
+            //     if (!data){
+            //         res.status(404).send("Anime not found");
+            //         return;
+            //     }
+            //     res.status(200).send(data);
+            //     return;
+            // });
+        })
 
 
 

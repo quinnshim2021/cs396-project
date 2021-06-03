@@ -51,6 +51,10 @@ const AnimeScheme = new Schema({
         type: Schema.Types.String,
         required: true
     },
+    Url: {
+        type: Schema.Types.String,
+        required: false
+    }
 });
 
 AnimeScheme.statics.create = function(obj) {
@@ -67,6 +71,7 @@ AnimeScheme.statics.create = function(obj) {
     anime.Rating = obj.Rating;
     anime.Score = obj.Score;
     anime.Favorites = obj.Favorites;
+    anime.Url = obj.Url;
 
     return anime;
 }
